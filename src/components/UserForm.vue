@@ -31,19 +31,21 @@ import { useUtils } from '@/composables/useUtils'
 const { capitalizeEachWord } = useUtils()
 const emit = defineEmits(['on-submit'])
 
-interface FormProps {
+interface RuleForm {
   name?: string
   email?: string
+  phone?: string
+  website?: string
   street?: string
+  suite?: string
   city?: string
-  submitButtonText?: string
+  zipcode?: string
+  company?: string
 }
 
-interface RuleForm {
-  name: string
-  email: string
-  street: string
-  city: string
+interface FormProps extends Partial<RuleForm> {
+  id?: number
+  submitButtonText?: string
 }
 
 const props = defineProps<FormProps>()
@@ -52,8 +54,13 @@ const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive<RuleForm>({
   name: props.name ?? '',
   email: props.email ?? '',
+  phone: props.phone ?? '',
+  website: props.website ?? '',
   street: props.street ?? '',
+  suite: props.suite ?? '',
   city: props.city ?? '',
+  zipcode: props.zipcode ?? '',
+  company: props.company ?? '',
 })
 
 const rules = reactive<FormRules<RuleForm>>({
@@ -66,9 +73,11 @@ const rules = reactive<FormRules<RuleForm>>({
 const formattedValue = () => {
   return {
     ...ruleForm,
-    name: capitalizeEachWord(ruleForm.name),
-    street: capitalizeEachWord(ruleForm.street),
-    city: capitalizeEachWord(ruleForm.city),
+    name: capitalizeEachWord(ruleForm.name ?? ''),
+    address: {
+      street: capitalizeEachWord(ruleForm.street ?? ''),
+      city: capitalizeEachWord(ruleForm.city ?? ''),
+    },
   }
 }
 
@@ -83,6 +92,12 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     }
   })
 }
+
+const resetForm = () => {
+  ruleFormRef.value?.resetFields()
+}
+// expose the reset feature to the parent component
+defineExpose({ resetForm })
 </script>
 
 <style scoped>

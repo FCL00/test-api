@@ -10,8 +10,7 @@
       :id="user.id"
       :name="user.name"
       :email="user.email"
-      :phone="user.phone"
-      :website="user.website"
+      :address="user.address"
       @on-view="handleView"
     />
   </div>
@@ -21,11 +20,17 @@
     </el-card>
   </div>
 
-  <el-dialog ref="userFormRef" v-model="isModalOpen" width="500" align-center>
+  <el-dialog
+    ref="userFormRef"
+    v-model="isModalOpen"
+    width="500"
+    align-center
+    @closed="handleDialogClosed"
+  >
     <template #header>
       <p>Add New User</p>
     </template>
-    <user-form @on-submit="handleSubmit" />
+    <user-form ref="resetRef" @on-submit="handleSubmit" />
   </el-dialog>
 </template>
 
@@ -38,25 +43,24 @@ import UserCard from '@/components/UserCard.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import UserForm from '@/components/UserForm.vue'
 import type { User } from '@/types'
-// import type { FormInstance } from 'element-plus'
+import { useTemplateRef } from 'vue'
 
 const isModalOpen = ref(false)
 const router = useRouter()
 const useUserStore = userStore()
-// const userFormRef = ref<FormInstance>()
+const formResetRef = useTemplateRef('resetRef')
 
-// function onCloseDialog() {
-//   console.log('closed?')
-//   isModalOpen.value = false
-//   userFormRef.value?.resetFields()
-// }
+// trigger the form reset when the dialog is closed
+const handleDialogClosed = () => {
+  formResetRef.value?.resetForm()
+}
 
 function handleView(id: number) {
   router.push(`/users/${id}`)
 }
 
 function handleSubmit(formData: Partial<User>) {
-  console.log(formData)
+  useUserStore.addUser(formData)
 }
 
 onMounted(() => {

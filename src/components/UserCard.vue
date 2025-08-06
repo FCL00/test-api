@@ -8,12 +8,12 @@
       {{ props.email }}
     </p>
     <p class="flex align-center">
-      <el-icon><Phone /></el-icon>
-      {{ props.phone }}
+      <el-icon><Location /></el-icon>
+      {{ props.address?.street }}
     </p>
     <p class="flex align-center">
-      <el-icon><Link /></el-icon>
-      {{ props.website }}
+      <el-icon><OfficeBuilding /></el-icon>
+      {{ props.address?.city }}
     </p>
     <template #footer>
       <div class="flex">

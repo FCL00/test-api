@@ -73,8 +73,56 @@ export const useValidators = () => {
     }
   }
 
+  const streetValidator = (
+    rule: InternalRuleItem,
+    value: string,
+    callback: (error?: string | Error) => void,
+  ) => {
+    const validCharsPattern = /^[A-Za-z0-9\s.,'-]+$/
+    const cleanStructurePattern = /^[A-Za-z0-9]+(?:[.,'\- ]+[A-Za-z0-9]+)*$/
+
+    const trimmedValue = (value || '').trim()
+
+    if (!trimmedValue) {
+      callback(new Error('Street is required.'))
+    } else if (!validCharsPattern.test(trimmedValue)) {
+      callback(new Error('Street contains invalid characters.'))
+    } else if (!cleanStructurePattern.test(trimmedValue)) {
+      callback(new Error('Street has improper formatting.'))
+    } else if (trimmedValue.length <= 3) {
+      callback(new Error('Street name is too short.'))
+    } else {
+      callback()
+    }
+  }
+
+  const cityValidator = (
+    rule: InternalRuleItem,
+    value: string,
+    callback: (error?: string | Error) => void,
+  ) => {
+    const validCharsPattern = /^[A-Za-zÑñ\s-]+$/
+    const cleanStructurePattern = /^[A-Za-zÑñ]+(?:[- ][A-Za-zÑñ]+)*$/
+
+    const trimmedValue = (value || '').trim()
+
+    if (!trimmedValue) {
+      callback(new Error('City is required.'))
+    } else if (!validCharsPattern.test(trimmedValue)) {
+      callback(new Error('City can only contain letters, spaces, and hyphens.'))
+    } else if (!cleanStructurePattern.test(trimmedValue)) {
+      callback(new Error('Invalid city format.'))
+    } else if (trimmedValue.length <= 2) {
+      callback(new Error('City name is too short.'))
+    } else {
+      callback()
+    }
+  }
+
   return {
     addressValidator,
     nameValidator,
+    streetValidator,
+    cityValidator,
   }
 }

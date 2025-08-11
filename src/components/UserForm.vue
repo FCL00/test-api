@@ -1,10 +1,5 @@
 <template>
-  <el-form
-    ref="ruleFormRef"
-    :model="ruleForm"
-    :rules="rules"
-    @submit.prevent="submitForm(ruleFormRef)"
-  >
+  <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" @submit.prevent="submitForm(ruleFormRef)">
     <el-form-item label="Fullname" prop="name" label-position="top">
       <el-input v-model="ruleForm.name" placeholder="Enter your name" clearable />
     </el-form-item>
@@ -27,24 +22,27 @@
 import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useUtils } from '@/composables/useUtils'
+import { useValidators } from '@/composables/useValidators'
 
 const { capitalizeEachWord } = useUtils()
+const { streetValidator, cityValidator, nameValidator } = useValidators()
 const emit = defineEmits(['on-submit'])
 
 interface RuleForm {
-  name?: string
-  email?: string
-  phone?: string
-  website?: string
-  street?: string
-  suite?: string
-  city?: string
-  zipcode?: string
-  company?: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  street?: string | null
+  suite?: string | null
+  city?: string | null
+  zipcode?: string | null
+  company?: string | null
 }
 
 interface FormProps extends Partial<RuleForm> {
   id?: number
+  mode?: 'edit' | 'add'
   submitButtonText?: string
 }
 
@@ -52,22 +50,22 @@ const props = defineProps<FormProps>()
 
 const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive<RuleForm>({
-  name: props.name ?? '',
-  email: props.email ?? '',
-  phone: props.phone ?? '',
-  website: props.website ?? '',
-  street: props.street ?? '',
-  suite: props.suite ?? '',
-  city: props.city ?? '',
-  zipcode: props.zipcode ?? '',
-  company: props.company ?? '',
+  name: props.name,
+  email: props.email,
+  phone: props.phone,
+  website: props.website,
+  street: props.street,
+  suite: props.suite,
+  city: props.city,
+  zipcode: props.zipcode,
+  company: props.company,
 })
 
 const rules = reactive<FormRules<RuleForm>>({
-  name: [{ required: true, min: 3, trigger: 'blur' }],
+  name: [{ required: true, min: 3, validator: nameValidator, trigger: 'blur' }],
   email: [{ required: true, type: 'email', trigger: 'blur' }],
-  street: [{ required: true, trigger: 'blur' }],
-  city: [{ required: true, trigger: 'blur' }],
+  street: [{ required: true, validator: streetValidator, trigger: 'blur' }],
+  city: [{ required: true, validator: cityValidator, trigger: 'blur' }],
 })
 
 const formattedValue = () => {
@@ -85,7 +83,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      emit('on-submit', formattedValue())
+      if (props.mode === 'edit') emit('on-submit', props?.id, formattedValue())
+      if (props.mode === 'add') emit('on-submit', formattedValue())
       console.log('submit!')
     } else {
       console.log('error submit!', fields)

@@ -32,6 +32,31 @@ export const userStore = defineStore('users', {
       }
     },
 
+    async addUser(request: Partial<User>) {
+      const BASE_URL = import.meta.env.VITE_BASE_URL
+      try {
+        this.addStatus = 'pending'
+        const response = await fetch(`${BASE_URL}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(request),
+        })
+
+        if (!response.ok) {
+          ElMessage.error('Failed to add user')
+        }
+        const result = await response.json()
+        this.users.push({ ...result })
+        console.log('request', result)
+        console.log(this.users)
+        this.addStatus = 'fulfilled'
+        ElMessage.success('Successfully added')
+      } catch (error) {
+        this.addStatus = 'rejected'
+        console.error(error)
+      }
+    },
+
     async updateUser(id: number, updatedData: Partial<User>) {
       const index = this.users.findIndex((user) => user.id === id)
       const BASE_URL = import.meta.env.VITE_BASE_URL
@@ -49,6 +74,7 @@ export const userStore = defineStore('users', {
 
         const result = await response.json()
         this.users[index] = result
+        ElMessage.error('Successfully updated')
       } catch (error) {
         console.error(error)
       }
@@ -60,7 +86,7 @@ export const userStore = defineStore('users', {
       try {
         const response = await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' })
         if (!response.ok) {
-          ElMessage.error('Failed to updated')
+          ElMessage.error('Failed to delete')
           return
         }
         const result = await response.json()

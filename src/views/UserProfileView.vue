@@ -1,5 +1,6 @@
 <template>
-  <el-card style="margin-top: 20px" v-if="userDetails?.id">
+  <el-card style="margin-top: 20px" v-if="userDetails?.id && !isFormVisible">
+    <router-link to="/">&leftarrow; Go Back</router-link>
     <h1>Personal Information</h1>
 
     <div class="form-control">
@@ -11,58 +12,52 @@
       <h3>Email:</h3>
       <p>{{ userDetails.email }}</p>
     </div>
-
-    <div class="form-control">
-      <h3>Phone:</h3>
-      <p>{{ userDetails.phone }}</p>
-    </div>
-
-    <div class="form-control">
-      <h3>Website:</h3>
-      <p>{{ userDetails.website }}</p>
-    </div>
-
     <div class="form-control">
       <h3>Address:</h3>
-      <p>
-        {{ userDetails.address?.street }}, {{ userDetails.address?.suite }},
-        {{ userDetails.address?.city }},
-        {{ userDetails.address?.zipcode }}
-      </p>
+      <p>{{ userDetails.address?.street }}, {{ userDetails.address?.city }},</p>
     </div>
-
     <div class="form-control">
-      <h3>Company:</h3>
-      <p>{{ userDetails.company?.name }}</p>
+      <h3>Created At:</h3>
+      <p>{{ dayjs().format('dddd, MMMM D, YYYY') }}</p>
     </div>
-
-    <template #footer>
-      <div class="flex">
-        <el-button color="#303030" size="large" @click="onEdit">Edit</el-button>
-        <el-button color="#303030" size="large" @click="onDelete">Delete</el-button>
-      </div>
-    </template>
   </el-card>
-  <p v-else>Loading user data...</p>
+  <el-card shadow="never" v-if="!userDetails && !isFormVisible">
+    <el-skeleton :animated="true" :rows="9" />
+  </el-card>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, watch, onMounted, onBeforeMount, onBeforeUnmount } from 'vue'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { userStore } from '@/stores/user'
 import type { User } from '@/types'
+import dayjs from 'dayjs'
 
+const isFormVisible = ref(false)
 const route = useRoute()
-const store = userStore()
+const useUserStore = userStore()
 const userDetails = ref<Partial<User>>()
-const emit = defineEmits(['on-edit', 'on-delete'])
+const router = useRouter()
 
 async function loadUserDetails(id: string) {
-  userDetails.value = store.getUserById(id)
+  const user = await useUserStore.fetchUserById(Number(id))
+  userDetails.value = user
+
+  if (!user) {
+    router.push('/')
+  }
 }
 
-onMounted(() => {
-  loadUserDetails(route.params.id as string)
+onMounted(async () => {
+  await loadUserDetails(route.params.id as string)
+})
+
+onBeforeMount(() => {
+  console.log('on before mount')
+})
+
+onBeforeUnmount(() => {
+  console.log('on before Unmount')
 })
 
 watch(
@@ -73,17 +68,14 @@ watch(
     }
   },
 )
-
-function onEdit() {
-  emit('on-edit', userDetails.value?.id)
-}
-
-function onDelete() {
-  emit('on-delete', userDetails.value?.id)
-}
 </script>
 
 <style scoped>
+a {
+  text-decoration: none;
+  color: var(--brand-neutral-black);
+}
+
 h3,
 p {
   margin: 0;

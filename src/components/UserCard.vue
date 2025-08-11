@@ -15,9 +15,15 @@
       <el-icon><OfficeBuilding /></el-icon>
       {{ props.address?.city }}
     </p>
+    <p class="flex align-center">
+      <el-icon><Calendar /></el-icon>
+      {{ props.date }}
+    </p>
     <template #footer>
       <div class="flex">
         <el-button color="#303030" size="large" @click="onView"> View Details </el-button>
+        <el-button color="#303030" size="large" @click="onEdit"> Edit </el-button>
+        <el-button color="#303030" size="large" @click="onDelete"> Delete </el-button>
       </div>
     </template>
   </el-card>
@@ -25,17 +31,34 @@
 
 <script lang="ts" setup>
 import type { User } from '@/types'
+import { Calendar } from '@element-plus/icons-vue'
 
-const props = defineProps<Partial<User>>()
+interface CardProps extends User {
+  date?: string
+}
+
+const props = defineProps<Partial<CardProps>>()
 const emit = defineEmits(['on-view', 'on-edit', 'on-delete'])
 
 function onView() {
   console.log(props.id)
   emit('on-view', props.id)
 }
+
+function onEdit() {
+  emit('on-edit', props.id)
+}
+
+function onDelete() {
+  emit('on-delete', props.id)
+}
 </script>
 
 <style scoped>
+.flex {
+  display: flex;
+  gap: 4px;
+}
 .align-center {
   align-items: center;
 }

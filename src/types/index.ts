@@ -22,4 +22,4 @@ export interface User {
   }
 }
 
-export type Status = 'pending' | 'fulfilled' | 'rejected'
+export type Status = 'loading' | 'fulfilled' | 'rejected'

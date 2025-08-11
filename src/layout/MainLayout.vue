@@ -1,14 +1,25 @@
 <template>
   <main class="center">
     <header class="header">
-      <h1>Users Profile</h1>
+      <router-link to="/">
+        <h1>Users Profile</h1>
+      </router-link>
     </header>
     <router-view />
   </main>
 </template>
 
 <script lang="ts" setup>
-import { RouterView } from 'vue-router'
+import { RouterView, RouterLink } from 'vue-router'
 </script>
 
-<style></style>
+<style scoped>
+.header {
+  display: flex;
+  justify-content: start;
+}
+a {
+  text-decoration: none;
+  color: var(--brand-neutral-black);
+}
+</style>

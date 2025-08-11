@@ -13,8 +13,19 @@
       </el-icon>
     </template>
     <template #default="{ item }">
-      <div class="value">{{ item.value }}</div>
-      <span class="link">{{ item.link }}</span>
+      <div class="name">
+        <el-icon><User /></el-icon>
+        {{ item.name }}
+      </div>
+      <div class="email">
+        <el-icon><Message /></el-icon>
+        {{ item.email }}
+      </div>
+      <div class="address">
+        <el-icon><Location /></el-icon>
+        {{ item.address.street }}, {{ item.address.city }}
+      </div>
+      <el-divider />
     </template>
   </el-autocomplete>
 </template>
@@ -22,39 +33,42 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import type { AutocompleteFetchSuggestionsCallback } from 'element-plus'
+import type { User } from '@/types'
+import { userStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 
-interface LinkItem {
-  value: string
-  link: string
-}
-
+const { users } = userStore()
 const state = ref('')
-const links = ref<LinkItem[]>([])
+const links = ref<User[]>([])
+const router = useRouter()
 
 const querySearch = (queryString: string, cb: AutocompleteFetchSuggestionsCallback) => {
   const results = queryString ? links.value.filter(createFilter(queryString)) : links.value
-  // call callback function to return suggestion objects
   cb(results)
 }
 const createFilter = (queryString: string) => {
-  return (restaurant: LinkItem) => {
-    return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+  const query = queryString.toLowerCase()
+  return (restaurant: User) => {
+    const { name, email, address } = restaurant
+    const street = address.street.toLowerCase()
+    const city = address.city.toLowerCase()
+    const fullAddress = `${street} ${city}`
+
+    return (
+      name.toLowerCase().includes(query) ||
+      email.toLowerCase().includes(query) ||
+      street.includes(query) ||
+      city.includes(query) ||
+      fullAddress.includes(query)
+    )
   }
 }
 
 const loadAll = () => {
-  return [
-    { value: 'vue', link: 'https://github.com/vuejs/vue' },
-    { value: 'element', link: 'https://github.com/ElemeFE/element' },
-    { value: 'cooking', link: 'https://github.com/ElemeFE/cooking' },
-    { value: 'mint-ui', link: 'https://github.com/ElemeFE/mint-ui' },
-    { value: 'vuex', link: 'https://github.com/vuejs/vuex' },
-    { value: 'vue-router', link: 'https://github.com/vuejs/vue-router' },
-    { value: 'babel', link: 'https://github.com/babel/babel' },
-  ]
+  return users
 }
 const handleSelect = (item: Record<string, string>) => {
-  console.log(item)
+  router.push(`/users/${item.id}`)
 }
 
 const handleIconClick = (ev: Event) => {

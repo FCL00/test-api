@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
 import type { AutocompleteFetchSuggestionsCallback } from 'element-plus'
 import type { User } from '@/types'
 import { userStore } from '@/stores/user'
@@ -51,8 +51,8 @@ const querySearch = (queryString: string, cb: AutocompleteFetchSuggestionsCallba
 }
 const createFilter = (queryString: string) => {
   const query = queryString.toLowerCase()
-  return (restaurant: User) => {
-    const { name, username, email, address } = restaurant
+  return (user: User) => {
+    const { name, username, email, address } = user
     const uname = username.toLowerCase()
     const street = address.street.toLowerCase()
     const city = address.city.toLowerCase()
@@ -69,9 +69,9 @@ const createFilter = (queryString: string) => {
   }
 }
 
-const loadAll = async () => {
-  return await getAllUsers()
-}
+// const loadAll = async () => {
+//   return await getAllUsers()
+// }
 const handleSelect = (item: Record<string, string>) => {
   router.push(`/users/${item.id}`)
 }
@@ -80,8 +80,13 @@ const handleIconClick = (ev: Event) => {
   console.log(ev)
 }
 
+onBeforeMount(async () => {
+  await getAllUsers()
+  links.value = users
+})
+
 onMounted(async () => {
-  await loadAll()
+  await getAllUsers()
   links.value = users
 })
 </script>

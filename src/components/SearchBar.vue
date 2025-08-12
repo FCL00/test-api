@@ -17,6 +17,9 @@
         <el-icon><User /></el-icon>
         {{ item.name }}
       </div>
+      <div class="username">
+        <span>@ {{ item.username }}</span>
+      </div>
       <div class="email">
         <el-icon><Message /></el-icon>
         {{ item.email }}
@@ -49,12 +52,14 @@ const querySearch = (queryString: string, cb: AutocompleteFetchSuggestionsCallba
 const createFilter = (queryString: string) => {
   const query = queryString.toLowerCase()
   return (restaurant: User) => {
-    const { name, email, address } = restaurant
+    const { name, username, email, address } = restaurant
+    const uname = username
     const street = address.street.toLowerCase()
     const city = address.city.toLowerCase()
     const fullAddress = `${street} ${city}`
 
     return (
+      uname.includes(query) ||
       name.toLowerCase().includes(query) ||
       email.toLowerCase().includes(query) ||
       street.includes(query) ||

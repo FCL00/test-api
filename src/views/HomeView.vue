@@ -39,6 +39,7 @@
       v-for="user in useUserStore.users"
       :key="user.id"
       :id="user.id"
+      :username="user.username"
       :name="user.name"
       :email="user.email"
       :address="user.address"

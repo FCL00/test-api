@@ -1,8 +1,11 @@
 <template>
   <el-card shadow="never">
     <h3 class="flex align-center">
-      <el-icon><User /></el-icon>{{ props.name }}
+      <el-icon><User /></el-icon>
+      {{ props.name }}
     </h3>
+    <p>@ {{ props.username }}</p>
+
     <p class="flex align-center">
       <el-icon><Message /></el-icon>
       {{ props.email }}

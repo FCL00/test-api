@@ -40,7 +40,7 @@ import type { User } from '@/types'
 import { userStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 
-const { users } = userStore()
+const { users, getAllUsers } = userStore()
 const state = ref('')
 const links = ref<User[]>([])
 const router = useRouter()
@@ -53,13 +53,13 @@ const createFilter = (queryString: string) => {
   const query = queryString.toLowerCase()
   return (restaurant: User) => {
     const { name, username, email, address } = restaurant
-    const uname = username
+    const uname = username.toLowerCase()
     const street = address.street.toLowerCase()
     const city = address.city.toLowerCase()
     const fullAddress = `${street} ${city}`
 
     return (
-      uname.includes(query) ||
+      uname.toLowerCase().includes(query) ||
       name.toLowerCase().includes(query) ||
       email.toLowerCase().includes(query) ||
       street.includes(query) ||
@@ -69,8 +69,8 @@ const createFilter = (queryString: string) => {
   }
 }
 
-const loadAll = () => {
-  return users
+const loadAll = async () => {
+  return await getAllUsers()
 }
 const handleSelect = (item: Record<string, string>) => {
   router.push(`/users/${item.id}`)
@@ -80,8 +80,9 @@ const handleIconClick = (ev: Event) => {
   console.log(ev)
 }
 
-onMounted(() => {
-  links.value = loadAll()
+onMounted(async () => {
+  await loadAll()
+  links.value = users
 })
 </script>
 

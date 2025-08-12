@@ -199,12 +199,14 @@ const handleEditDialogClosed = () => {
 }
 
 // Initial data fetch
-onMounted(() => {
-  useUserStore.getAllUsers()
+onMounted(async () => {
+  await useUserStore.getAllUsers()
+  console.log(useUserStore.users) // Now users should be populated
 })
 
-onBeforeMount(() => {
-  console.log('on before mount')
+onBeforeMount(async () => {
+  await useUserStore.getAllUsers()
+  console.log(useUserStore.users)
 })
 
 onBeforeUnmount(() => {

@@ -1,6 +1,6 @@
 <template>
   <div class="flex-justify-end box-content">
-    <search-bar />
+    <search-bar :users="useUserStore.users" />
     <el-tooltip content="Add User" placement="top" effect="dark">
       <el-button color="#303030" size="large" @click="isModalOpen = true">
         <el-icon><Plus /></el-icon>
@@ -201,7 +201,7 @@ const handleEditDialogClosed = () => {
 // Initial data fetch
 onMounted(async () => {
   await useUserStore.getAllUsers()
-  console.log(useUserStore.users) // Now users should be populated
+  console.log(useUserStore.users)
 })
 
 onBeforeMount(async () => {

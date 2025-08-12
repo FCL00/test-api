@@ -34,19 +34,18 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import type { AutocompleteFetchSuggestionsCallback } from 'element-plus'
 import type { User } from '@/types'
-import { userStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 
-const { users, getAllUsers } = userStore()
+const props = defineProps<{ users: User[] }>()
+
 const state = ref('')
-const links = ref<User[]>([])
 const router = useRouter()
 
 const querySearch = (queryString: string, cb: AutocompleteFetchSuggestionsCallback) => {
-  const results = queryString ? links.value.filter(createFilter(queryString)) : links.value
+  const results = queryString ? props.users.filter(createFilter(queryString)) : props.users
   cb(results)
 }
 const createFilter = (queryString: string) => {
@@ -69,9 +68,6 @@ const createFilter = (queryString: string) => {
   }
 }
 
-// const loadAll = async () => {
-//   return await getAllUsers()
-// }
 const handleSelect = (item: Record<string, string>) => {
   router.push(`/users/${item.id}`)
 }
@@ -79,16 +75,6 @@ const handleSelect = (item: Record<string, string>) => {
 const handleIconClick = (ev: Event) => {
   console.log(ev)
 }
-
-onBeforeMount(async () => {
-  await getAllUsers()
-  links.value = users
-})
-
-onMounted(async () => {
-  await getAllUsers()
-  links.value = users
-})
 </script>
 
 <style scoped></style>

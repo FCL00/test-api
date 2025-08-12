@@ -9,6 +9,11 @@
     </div>
 
     <div class="form-control">
+      <h3>Username</h3>
+      <p>{{ userDetails.username }}</p>
+    </div>
+
+    <div class="form-control">
       <h3>Email:</h3>
       <p>{{ userDetails.email }}</p>
     </div>

@@ -1,11 +1,36 @@
 import type { InternalRuleItem } from 'async-validator'
 
 export const useValidators = () => {
-  const addressValidator = (
-    rule: InternalRuleItem,
-    value: string,
-    callback: (error?: string | Error) => void,
-  ) => {
+  const usernameValidator = (rule: InternalRuleItem, value: string, callback: (error?: string | Error) => void) => {
+    const trimmedValue = (value || '').trim()
+
+    // Pattern: only letters, numbers, underscores, and dots
+    const validCharsPattern = /^[A-Za-z0-9._]+$/
+
+    // Pattern: cannot start or end with dot or underscore
+    const noLeadingTrailingPattern = /^(?![._])(?!.*[._]$).+$/
+
+    // Pattern: no consecutive dots or underscores or dot-underscore combos
+    const noRepeatedPattern = /^(?!.*[._]{2,})(?!.*\._)(?!.*_\.).+$/
+
+    if (!trimmedValue) {
+      callback(new Error('Username is required.'))
+    } else if (trimmedValue.length < 3) {
+      callback(new Error('Username must be at least 3 characters long.'))
+    } else if (trimmedValue.length > 20) {
+      callback(new Error('Username must be 20 characters or fewer.'))
+    } else if (!validCharsPattern.test(trimmedValue)) {
+      callback(new Error('Only letters, numbers, underscores, and dots are allowed.'))
+    } else if (!noLeadingTrailingPattern.test(trimmedValue)) {
+      callback(new Error('Username cannot start or end with a dot or underscore.'))
+    } else if (!noRepeatedPattern.test(trimmedValue)) {
+      callback(new Error('Username cannot contain consecutive dots/underscores.'))
+    } else {
+      callback()
+    }
+  }
+
+  const addressValidator = (rule: InternalRuleItem, value: string, callback: (error?: string | Error) => void) => {
     const trimmed = (value || '').trim()
     // Pattern: Only digits (pure number)
     const isOnlyNumbersPattern = /^\d+$/
@@ -50,11 +75,7 @@ export const useValidators = () => {
     callback()
   }
 
-  const nameValidator = (
-    rule: InternalRuleItem,
-    value: string,
-    callback: (error?: string | Error) => void,
-  ) => {
+  const nameValidator = (rule: InternalRuleItem, value: string, callback: (error?: string | Error) => void) => {
     const validCharsPattern = /^[A-Za-zÑñ\s-]+$/
     const cleanStructurePattern = /^[A-Za-zÑñ]+(?:[- ][A-Za-zÑñ]+)*$/
 
@@ -73,11 +94,7 @@ export const useValidators = () => {
     }
   }
 
-  const streetValidator = (
-    rule: InternalRuleItem,
-    value: string,
-    callback: (error?: string | Error) => void,
-  ) => {
+  const streetValidator = (rule: InternalRuleItem, value: string, callback: (error?: string | Error) => void) => {
     const validCharsPattern = /^[A-Za-z0-9\s.,'-]+$/
     const cleanStructurePattern = /^[A-Za-z0-9]+(?:[.,'\- ]+[A-Za-z0-9]+)*$/
 
@@ -96,11 +113,7 @@ export const useValidators = () => {
     }
   }
 
-  const cityValidator = (
-    rule: InternalRuleItem,
-    value: string,
-    callback: (error?: string | Error) => void,
-  ) => {
+  const cityValidator = (rule: InternalRuleItem, value: string, callback: (error?: string | Error) => void) => {
     const validCharsPattern = /^[A-Za-zÑñ\s-]+$/
     const cleanStructurePattern = /^[A-Za-zÑñ]+(?:[- ][A-Za-zÑñ]+)*$/
 
@@ -120,6 +133,7 @@ export const useValidators = () => {
   }
 
   return {
+    usernameValidator,
     addressValidator,
     nameValidator,
     streetValidator,

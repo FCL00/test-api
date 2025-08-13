@@ -43,7 +43,7 @@
       :name="user.name"
       :email="user.email"
       :address="user.address"
-      :date="dayjs().format('dddd, MMMM D, YYYY')"
+      :date="user.date"
       @on-view="handleView"
       @on-edit="handleEdit"
       @on-delete="handleDelete"
@@ -55,14 +55,10 @@
     <el-table v-if="useUserStore.fetchStatus !== 'loading'" :data="useUserStore.users" style="width: 100%">
       <el-table-column show-overflow-tooltip width="250" prop="name" label="Name" />
       <el-table-column show-overflow-tooltip width="250" prop="email" label="Email" />
-      <!-- <el-table-column show-overflow-tooltip width="200" prop="address.street" label="Street" /> -->
+      <el-table-column show-overflow-tooltip width="200" prop="address.street" label="Street" />
       <el-table-column show-overflow-tooltip width="200" prop="address.city" label="City" />
-      <el-table-column show-overflow-tooltip width="150" label="Created at">
-        <template #default="scope">
-          {{ dayjs(scope.row.createdAt).format('MM/DD/YYYY') }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" width="300">
+      <el-table-column show-overflow-tooltip width="200" prop="date" label="Created at" />
+      <el-table-column label="Actions" width="200" fixed="right">
         <template #default="scope">
           <div class="table-actions">
             <el-button size="small" color="#303030" @click="handleView(scope.row.id)">View</el-button>
@@ -131,6 +127,9 @@ import { userStore } from '@/stores/user'
 import type { User } from '@/types'
 import { ElMessageBox } from 'element-plus'
 
+// Initial Data
+// const users = ref<User[]>([])
+
 // UI state
 const isModalOpen = ref(false)
 const isEditModalOpen = ref(false)
@@ -167,6 +166,7 @@ const handleDelete = (id: number) => {
     type: 'warning',
   })
     .then(() => {
+      console.log('id' + id)
       useUserStore.deleteUser(id)
     })
     .catch(() => {
@@ -197,16 +197,17 @@ const handleDialogClosed = () => {
 const handleEditDialogClosed = () => {
   editFormResetRef.value?.resetForm()
 }
-
 // Initial data fetch
-onMounted(async () => {
-  await useUserStore.getAllUsers()
+onBeforeMount(async () => {
   console.log(useUserStore.users)
 })
 
-onBeforeMount(async () => {
+onMounted(async () => {
   await useUserStore.getAllUsers()
-  console.log(useUserStore.users)
+  useUserStore.users = useUserStore.users.map((user) => ({
+    ...user,
+    date: dayjs().format('dddd, MMMM D, YYYY'),
+  }))
 })
 
 onBeforeUnmount(() => {

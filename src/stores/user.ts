@@ -74,7 +74,9 @@ export const userStore = defineStore('users', () => {
       }
 
       const result = await response.json()
-      users.value.unshift(result)
+      const uniqueId = Date.now()
+      delete result.id
+      users.value.unshift({ ...result, id: uniqueId })
       addStatus.value = 'fulfilled'
       ElMessage.success('Successfully added')
     } catch (error) {

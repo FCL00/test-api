@@ -20,6 +20,7 @@ export interface User {
     catchPhrase: string
     bs: string
   }
+  date: string
 }
 
 export type Status = 'loading' | 'fulfilled' | 'rejected'

@@ -3,6 +3,9 @@
     <el-form-item label="Fullname" prop="name" label-position="top">
       <el-input v-model="ruleForm.name" placeholder="Enter your name" clearable />
     </el-form-item>
+    <el-form-item label="Username" prop="username" label-position="top">
+      <el-input v-model="ruleForm.username" placeholder="Enter your username" clearable />
+    </el-form-item>
     <el-form-item label="Email" prop="email" label-position="top">
       <el-input v-model="ruleForm.email" placeholder="Enter your email" clearable />
     </el-form-item>
@@ -20,16 +23,17 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
+import { dayjs, type FormInstance, type FormRules } from 'element-plus'
 import { useUtils } from '@/composables/useUtils'
 import { useValidators } from '@/composables/useValidators'
 
 const { capitalizeEachWord } = useUtils()
-const { streetValidator, cityValidator, nameValidator } = useValidators()
+const { streetValidator, cityValidator, nameValidator, usernameValidator } = useValidators()
 const emit = defineEmits(['on-submit'])
 
 interface RuleForm {
   name?: string | null
+  username?: string | null
   email?: string | null
   phone?: string | null
   website?: string | null
@@ -51,6 +55,7 @@ const props = defineProps<FormProps>()
 const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive<RuleForm>({
   name: props.name,
+  username: props.username,
   email: props.email,
   phone: props.phone,
   website: props.website,
@@ -63,6 +68,7 @@ const ruleForm = reactive<RuleForm>({
 
 const rules = reactive<FormRules<RuleForm>>({
   name: [{ required: true, min: 3, validator: nameValidator, trigger: 'blur' }],
+  username: [{ required: true, validator: usernameValidator, trigger: 'blur' }],
   email: [{ required: true, type: 'email', trigger: 'blur' }],
   street: [{ required: true, validator: streetValidator, trigger: 'blur' }],
   city: [{ required: true, validator: cityValidator, trigger: 'blur' }],
@@ -76,6 +82,7 @@ const formattedValue = () => {
       street: capitalizeEachWord(ruleForm.street ?? ''),
       city: capitalizeEachWord(ruleForm.city ?? ''),
     },
+    date: dayjs().format('dddd, MMMM D, YYYY'),
   }
 }
 

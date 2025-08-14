@@ -2,21 +2,31 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import type { User, Status } from '@/types'
+import type { User, Status, Comments } from '@/types'
 
 export const userStore = defineStore('users', () => {
   const users = ref<User[]>([])
+  const comments = ref<Comments[]>([])
   const fetchStatus = ref<Status>('loading')
   const getUserStatus = ref<Status>('loading')
   const addStatus = ref<Status>('loading')
   const updateStatus = ref<Status>('loading')
   const deleteStatus = ref<Status>('loading')
+  const commentStatus = ref<Status>('loading')
 
   const BASE_URL = import.meta.env.VITE_BASE_URL
 
   // Getter (computed)
   const getUserById = (id: number) => {
     return users.value.find((user) => user.id === Number(id))
+  }
+
+  const getRandomComments = (count = 3) => {
+    const total = comments.value.length
+    if (total === 0) return []
+    const start = Math.floor(Math.random() * (total - count + 1))
+    const end = start + count
+    return comments.value.slice(start, end)
   }
 
   // Actions
@@ -128,7 +138,32 @@ export const userStore = defineStore('users', () => {
     }
   }
 
+  async function getComments() {
+    const BASE_URL = import.meta.env.VITE_COMMENT_URL
+    try {
+      commentStatus.value = 'loading'
+      const response = await fetch(`${BASE_URL}`)
+      if (!response.ok) {
+        commentStatus.value = 'rejected'
+        ElMessage.error('Failed to fetch comments')
+        return
+      }
+      const result = await response.json()
+      commentStatus.value = 'fulfilled'
+      comments.value = result
+      console.log(comments.value, commentStatus.value)
+    } catch (error) {
+      ElMessage.success(`Error: ${error}`)
+      console.log(error)
+      commentStatus.value = 'rejected'
+    }
+  }
+
   return {
+    comments,
+    commentStatus,
+    getRandomComments,
+    getComments,
     users,
     fetchStatus,
     getUserStatus,

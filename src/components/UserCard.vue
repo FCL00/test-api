@@ -36,11 +36,7 @@
 import type { User } from '@/types'
 import { Calendar } from '@element-plus/icons-vue'
 
-interface CardProps extends User {
-  date?: string
-}
-
-const props = defineProps<Partial<CardProps>>()
+const props = defineProps<Partial<User>>()
 const emit = defineEmits(['on-view', 'on-edit', 'on-delete'])
 
 function onView() {

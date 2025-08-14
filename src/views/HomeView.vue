@@ -8,7 +8,7 @@
     </el-tooltip>
 
     <el-tooltip content="Refresh" placement="top">
-      <el-button color="#303030" size="large" @click="useUserStore.getAllUsers()">
+      <el-button color="#303030" size="large" @click="handleRefresh">
         <el-icon><RefreshLeft /></el-icon>
       </el-button>
     </el-tooltip>
@@ -154,6 +154,14 @@ const getSelectedUser = computed(() => {
 })
 
 // Event Handlers
+const handleRefresh = async () => {
+  await useUserStore.getAllUsers()
+  useUserStore.users = useUserStore.users.map((user) => ({
+    ...user,
+    date: dayjs().format('dddd, MMMM D, YYYY'),
+  }))
+}
+
 const handleChangeView = () => {
   changeView.value = !changeView.value
   console.log(changeView.value)

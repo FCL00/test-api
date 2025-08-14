@@ -31,40 +31,47 @@
   </el-card>
 
   <section class="comment">
-    <h1>Comments</h1>
+    <h1 class="flex-text">
+      <el-icon><ChatLineSquare /></el-icon>
+      <span>Comments ({{ randomNumber }})</span>
+    </h1>
+    <!-- card -->
     <template v-if="useUserStore.commentStatus === 'fulfilled'">
-      <el-timeline>
-        <el-timeline-item
-          v-for="comment in useUserStore.getRandomComments(randomNumber)"
-          :key="comment.id"
-          placement="top"
-        >
-          <el-card class="comment-card">
-            <div style="display: flex; gap: 12px; align-items: flex-start">
-              <div style="flex: 1">
-                <h3 class="line-clamp" style="margin: 0">{{ comment.email }}</h3>
-                <p class="line-clamp" style="margin-top: 4px">{{ comment.body }}</p>
-              </div>
-            </div>
-          </el-card>
-        </el-timeline-item>
-      </el-timeline>
+      <el-card
+        class="comment-card"
+        v-for="comment in useUserStore.getRandomComments(randomNumber)"
+        :key="comment.id"
+        style="margin-bottom: 20px"
+      >
+        <div class="flex-text">
+          <el-avatar :size="40" shape="circle" fit="cover" :src="`https://i.pravatar.cc/150?u=${comment.email}`">
+            {{ comment.email.charAt(0) }}
+          </el-avatar>
+          <h3 class="line-clamp">{{ comment.email }}</h3>
+        </div>
+        <div class="comment" style="">
+          <p style="margin-top: 4px">{{ comment.body }}</p>
+        </div>
+        <el-tooltip content="Not Available" placement="top" effect="dark">
+          <div class="flex-text cursor" style="margin-top: 20px; width: 75px">
+            <el-icon size="20"><ChatLineSquare /></el-icon>
+            <small>Reply</small>
+          </div>
+        </el-tooltip>
+      </el-card>
     </template>
+    <!-- skeleton -->
     <template v-if="useUserStore.commentStatus === 'loading'">
-      <el-timeline v-for="index in 5" :key="index">
-        <el-timeline-item>
-          <el-card shadow="never" style="margin-bottom: 16px">
-            <div class="content">
-              <el-skeleton-item class="avatar-skeleton" variant="circle" />
-              <div style="flex: 1">
-                <el-skeleton-item variant="text" style="width: 30%; margin-bottom: 8px" />
-                <el-skeleton-item variant="text" style="width: 90%; margin-bottom: 4px" />
-                <el-skeleton-item variant="text" style="width: 80%" />
-              </div>
-            </div>
-          </el-card>
-        </el-timeline-item>
-      </el-timeline>
+      <el-card shadow="never" style="margin-bottom: 16px">
+        <div class="content">
+          <el-skeleton-item class="avatar-skeleton" variant="circle" />
+          <div style="flex: 1">
+            <el-skeleton-item variant="text" style="width: 30%; margin-bottom: 8px" />
+            <el-skeleton-item variant="text" style="width: 90%; margin-bottom: 4px" />
+            <el-skeleton-item variant="text" style="width: 80%" />
+          </div>
+        </div>
+      </el-card>
     </template>
   </section>
 </template>
@@ -136,15 +143,21 @@ p {
   gap: 4px;
 }
 
-.comment {
-  margin-top: 20px;
-}
-
 .content {
   display: flex;
   gap: 12px;
-  align-items: flex-start;
-  box-sizing: content-box;
+}
+
+.comment {
+  flex: 1;
+  margin-top: 20px;
+}
+
+.flex-text {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 12px;
 }
 
 .avatar-skeleton {
@@ -152,32 +165,45 @@ p {
   height: 40px;
 }
 
-@media (max-width: 600px) {
-  /* Reduce left space where the dot/line sits */
-  .el-timeline-item__wrapper {
-    padding-left: 12px !important;
-  }
+.line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
-  /* Smaller dot */
-  .el-timeline-item__node {
-    width: 10px !important;
-    height: 10px !important;
-  }
+.comment-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
 
-  /* Adjust timestamp font */
-  .el-timeline-item__timestamp {
-    font-size: 12px !important;
-  }
+.flex-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 @media (max-width: 600px) {
   .comment-card {
-    flex-direction: column !important;
-    align-items: flex-start !important;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .comment-card .el-avatar {
-    margin-bottom: 8px;
+  .flex-text {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+  }
+
+  .comment-card h3 {
+    font-size: 14px;
+    word-break: break-word;
+  }
+
+  .comment-card p {
+    font-size: 13px;
   }
 }
 </style>

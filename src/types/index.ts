@@ -24,3 +24,10 @@ export interface User {
 }
 
 export type Status = 'loading' | 'fulfilled' | 'rejected'
+
+export interface Comments {
+  postId: number
+  id: number
+  email: string
+  body: string
+}

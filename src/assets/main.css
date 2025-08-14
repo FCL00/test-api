@@ -155,9 +155,27 @@ body {
   background-color: #121212;
   color: #fff;
 }
+
+/* Change the vertical line color */
+.el-timeline-item__tail {
+  border-left-color: var(--card-border-color) !important;
+}
+
+/* Change the dot color */
+.el-timeline-item__node {
+  background-color: var(--brand-neutral-black) !important;
+}
+
 .center {
   margin: 0 auto;
   padding: 1rem;
+}
+
+.line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 @media (max-width: 480px) {

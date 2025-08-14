@@ -1,20 +1,20 @@
 <template>
   <div class="flex-justify-end box-content">
     <search-bar :users="useUserStore.users" />
-    <el-tooltip content="Add User" placement="top" effect="dark">
+    <el-tooltip content="Add User" placement="top">
       <el-button color="#303030" size="large" @click="isModalOpen = true">
         <el-icon><Plus /></el-icon>
       </el-button>
     </el-tooltip>
 
-    <el-tooltip content="Refresh" placement="top" effect="dark">
+    <el-tooltip content="Refresh" placement="top">
       <el-button color="#303030" size="large" @click="useUserStore.getAllUsers()">
         <el-icon><RefreshLeft /></el-icon>
       </el-button>
     </el-tooltip>
 
     <!-- Toggle View Button -->
-    <el-tooltip :content="changeView ? 'Grid View' : 'Table View'" placement="top" effect="dark">
+    <el-tooltip :content="changeView ? 'Grid View' : 'Table View'" placement="top">
       <el-button color="#303030" size="large" @click="handleChangeView">
         <el-icon>
           <component :is="changeView ? 'Grid' : 'Expand'" />
@@ -99,6 +99,7 @@
       ref="editResetForm"
       :id="getSelectedUser?.id"
       :name="getSelectedUser?.name"
+      :username="getSelectedUser?.username"
       :email="getSelectedUser?.email"
       :street="getSelectedUser?.address.street"
       :city="getSelectedUser?.address.city"
@@ -110,6 +111,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ElLoading } from 'element-plus'
 import { ref, onMounted, computed, onBeforeMount, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTemplateRef } from 'vue'
@@ -161,13 +163,18 @@ const handleView = (id: number) => {
   router.push(`/users/${id}`)
 }
 
-const handleDelete = (id: number) => {
+const handleDelete = async (id: number) => {
   ElMessageBox.confirm('Are you sure you want to delete this user profile?', 'Warning', {
     type: 'warning',
   })
-    .then(() => {
-      console.log('id' + id)
-      useUserStore.deleteUser(id)
+    .then(async () => {
+      const loadingInstance = ElLoading.service({
+        lock: true,
+        text: 'Deleting User...',
+        background: 'rgba(0, 0, 0, 0.7)',
+      })
+      await useUserStore.deleteUser(id)
+      loadingInstance.close()
     })
     .catch(() => {
       return
@@ -179,9 +186,16 @@ const handleEdit = (id: number) => {
   getUserId.value = id
 }
 
-const handleUpdate = (id: number, formData: Partial<User>) => {
+const handleUpdate = async (id: number, formData: Partial<User>) => {
+  const loadingInstance = ElLoading.service({
+    lock: true,
+    text: 'Updating user profile...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
+
+  await useUserStore.updateUser(id, formData)
   isEditModalOpen.value = false
-  useUserStore.updateUser(id, formData)
+  loadingInstance.close()
 }
 
 const handleAddUser = (formData: Partial<User>) => {
@@ -203,6 +217,7 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+  await useUserStore.getComments()
   await useUserStore.getAllUsers()
   useUserStore.users = useUserStore.users.map((user) => ({
     ...user,

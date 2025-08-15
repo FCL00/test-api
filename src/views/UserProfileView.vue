@@ -102,6 +102,10 @@ async function loadUserDetails(id: string) {
 onMounted(async () => {
   await loadUserDetails(route.params.id as string)
   await useUserStore.getComments()
+
+  if (useUserStore.getUserStatus === 'rejected') {
+    router.push('/not-found')
+  }
 })
 
 onBeforeMount(() => {

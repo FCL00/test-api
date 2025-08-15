@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import UserProfileView from '@/views/UserProfileView.vue'
 import MainLayout from '@/layout/MainLayout.vue'
+import NotFound from '@/views/NotFound.vue'
 
 const routes = [
   {
@@ -10,6 +11,7 @@ const routes = [
     children: [
       { path: '', name: 'home', component: HomeView },
       { path: '/users/:id', name: 'user', component: UserProfileView },
+      { path: '/not-found', name: 'notFound', component: NotFound },
     ],
   },
 ]

@@ -36,7 +36,7 @@
       <span>Comments ({{ randomNumber }})</span>
     </h1>
     <!-- card -->
-    <template v-if="useUserStore.commentStatus === 'fulfilled'">
+    <template v-if="useUserStore.commentStatus === 'fulfilled' && useUserStore.getUserStatus === 'fulfilled'">
       <el-card
         class="comment-card"
         v-for="comment in useUserStore.getRandomComments(randomNumber)"
@@ -62,13 +62,17 @@
     </template>
     <!-- skeleton -->
     <template v-if="useUserStore.commentStatus === 'loading'">
-      <el-card shadow="never" style="margin-bottom: 16px">
+      <el-card shadow="never" style="margin-bottom: 16px" v-for="index in randomNumber" :key="index">
         <div class="content">
-          <el-skeleton-item class="avatar-skeleton" variant="circle" />
+          <el-skeleton animated>
+            <el-skeleton-item class="avatar-skeleton" variant="circle" />
+          </el-skeleton>
           <div style="flex: 1">
-            <el-skeleton-item variant="text" style="width: 30%; margin-bottom: 8px" />
-            <el-skeleton-item variant="text" style="width: 90%; margin-bottom: 4px" />
-            <el-skeleton-item variant="text" style="width: 80%" />
+            <el-skeleton>
+              <el-skeleton-item variant="text" style="width: 30%; margin-bottom: 8px" />
+              <el-skeleton-item variant="text" style="width: 90%; margin-bottom: 4px" />
+              <el-skeleton-item variant="text" style="width: 80%" />
+            </el-skeleton>
           </div>
         </div>
       </el-card>

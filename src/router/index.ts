@@ -11,7 +11,7 @@ const routes = [
     children: [
       { path: '', name: 'home', component: HomeView },
       { path: '/users/:id', name: 'user', component: UserProfileView },
-      { path: '/not-found', name: 'notFound', component: NotFound },
+      { path: '/:pathMatch(.*)*', name: 'notFound', component: NotFound },
     ],
   },
 ]
